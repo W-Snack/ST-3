@@ -53,6 +53,6 @@ class Timer {
 
  public:
   virtual ~Timer() = default;
-  virtual void tregister(int, TimerClient*);
+  virtual std::future<void> tregister(int, TimerClient*);
 };
 #endif  // INCLUDE_TIMEDDOOR_H_

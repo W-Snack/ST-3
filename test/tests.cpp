@@ -97,7 +97,7 @@ TEST_F(TimedDoorTest, FullTimerScenario) {
   Timer timer;
   timedDoor->unlock();
 
-  auto future =
+  std::future<void> future =
       timer.tregister(timedDoor->getTimeOut(), timedDoor->getAdapter());
 
   future.wait();

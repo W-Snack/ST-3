@@ -43,7 +43,7 @@ void Timer::sleep(int seconds) {
   std::this_thread::sleep_for(std::chrono::seconds(seconds));
 }
 
-void Timer::tregister(int timeout, TimerClient* client) {
+std::future<void> Timer::tregister(int timeout, TimerClient* client) {
   this->client = client;
   timerFuture = std::async(std::launch::async, [this, timeout, client]() {
     sleep(timeout);
