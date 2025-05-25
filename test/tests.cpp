@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 
 #include <cstdint>
+#include <utility>
 
 #include "TimedDoor.h"
 
@@ -93,15 +94,13 @@ TEST_F(TimedDoorTest, AdapterTriggersDoorStateCheck) {
 }
 
 TEST_F(TimedDoorTest, FullTimerScenario) {
-    MockTimer mockTimer;
-    timedDoor->unlock();
+  Timer timer;
+  timedDoor->unlock();
 
-    auto dummyFuture = std::async(std::launch::async, []{});
-    EXPECT_CALL(mockTimer, tregister(5, timedDoor->getAdapter()))
-        .WillOnce(Return(std::move(dummyFuture)));
+  auto future =
+      timer.tregister(timedDoor->getTimeOut(), timedDoor->getAdapter());
 
-    auto future = mockTimer.tregister(5, timedDoor->getAdapter());
-    future.wait();
+  timedDoor->getAdapter()->Timeout();
 
-    ASSERT_THROW(future.get(), std::runtime_error);
+  ASSERT_THROW(future.get(), std::runtime_error);
 }
