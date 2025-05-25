@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <thread>
 
-
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
 
 void DoorTimerAdapter::Timeout() {
@@ -46,9 +45,8 @@ void Timer::sleep(int seconds) {
 
 void Timer::tregister(int timeout, TimerClient* client) {
   this->client = client;
-  timerFuture = std::async(std::launch::async,
-                           [this, timeout, client]() {  // Явный захват client
-                             sleep(timeout);
-                             client->Timeout();  // Теперь client доступен
-                           });
+  timerFuture = std::async(std::launch::async, [this, timeout, client]() {
+    sleep(timeout);
+    client->Timeout();
+  });
 }

@@ -96,6 +96,11 @@ TEST_F(TimedDoorTest, FullTimerScenario) {
   testing::NiceMock<MockTimerClient> client;
   Timer timer;
   timedDoor->unlock();
-  timer.tregister(timedDoor->getTimeOut(), timedDoor->getAdapter());
-  ASSERT_THROW(client.Timeout(), std::runtime_error);
+
+  auto future =
+      timer.tregister(timedDoor->getTimeOut(), timedDoor->getAdapter());
+
+  future.wait();
+
+  ASSERT_THROW(future.get(), std::runtime_error);
 }

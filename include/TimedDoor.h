@@ -52,7 +52,7 @@ class Timer {
   void sleep(int seconds);
 
  public:
-  virtual ~Timer() = default; 
+  virtual ~Timer() = default;
   virtual void tregister(int, TimerClient*);
 };
 #endif  // INCLUDE_TIMEDDOOR_H_
