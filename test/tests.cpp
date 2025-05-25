@@ -25,7 +25,7 @@ class MockTimerClient : public TimerClient {
 
 class MockTimer : public Timer {
  public:
-  MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
+  MOCK_METHOD(std::future<void>, tregister, (int, TimerClient*), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
@@ -93,14 +93,15 @@ TEST_F(TimedDoorTest, AdapterTriggersDoorStateCheck) {
 }
 
 TEST_F(TimedDoorTest, FullTimerScenario) {
-  testing::NiceMock<MockTimerClient> client;
-  Timer timer;
-  timedDoor->unlock();
+    MockTimer mockTimer;
+    timedDoor->unlock();
 
-  std::future<void> future =
-      timer.tregister(timedDoor->getTimeOut(), timedDoor->getAdapter());
+    auto dummyFuture = std::async(std::launch::async, []{});
+    EXPECT_CALL(mockTimer, tregister(5, timedDoor->getAdapter()))
+        .WillOnce(Return(std::move(dummyFuture)));
 
-  future.wait();
+    auto future = mockTimer.tregister(5, timedDoor->getAdapter());
+    future.wait();
 
-  ASSERT_THROW(future.get(), std::runtime_error);
+    ASSERT_THROW(future.get(), std::runtime_error);
 }
