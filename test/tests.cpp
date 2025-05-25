@@ -100,7 +100,7 @@ TEST_F(TimedDoorTest, FullTimerScenario) {
   auto future =
       timer.tregister(timedDoor->getTimeOut(), timedDoor->getAdapter());
 
-  timedDoor->getAdapter()->Timeout();
+  future.wait();
 
   ASSERT_THROW(future.get(), std::runtime_error);
 }
