@@ -7,7 +7,6 @@
 
 #include "TimedDoor.h"
 
-
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Return;
@@ -22,6 +21,11 @@ class MockDoor : public Door {
 class MockTimerClient : public TimerClient {
  public:
   MOCK_METHOD(void, Timeout, (), (override));
+};
+
+class MockTimer : public Timer {
+ public:
+  MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {

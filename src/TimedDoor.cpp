@@ -2,8 +2,10 @@
 #include "TimedDoor.h"
 
 #include <chrono>
+#include <future>
 #include <stdexcept>
 #include <thread>
+
 
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
 
@@ -31,7 +33,9 @@ void TimedDoor::lock() { isOpened = false; }
 int TimedDoor::getTimeOut() const { return iTimeout; }
 
 void TimedDoor::throwState() {
-  throw std::runtime_error("Door opened too long");
+  if (isDoorOpened()) {
+    throw std::runtime_error("Door opened too long");
+  }
 }
 
 DoorTimerAdapter* TimedDoor::getAdapter() const { return adapter; }
@@ -42,6 +46,9 @@ void Timer::sleep(int seconds) {
 
 void Timer::tregister(int timeout, TimerClient* client) {
   this->client = client;
-  sleep(timeout);
-  client->Timeout();
+  timerFuture = std::async(std::launch::async,
+                           [this, timeout, client]() {  // Явный захват client
+                             sleep(timeout);
+                             client->Timeout();  // Теперь client доступен
+                           });
 }
